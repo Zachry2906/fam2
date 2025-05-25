@@ -45,8 +45,7 @@ app.use('/api', userRoutes);
 
 // Sinkronisasi model sebelum server berjalan
 initializeModels().then(() => {
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
+    app.listen(3000, () => {
         console.log(`Server is running on port ${port}`);
     });
 }).catch((error) => {
