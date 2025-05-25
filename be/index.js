@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import familyRoutes from './routes/famillyRoutes.js';
+import famillyRoutes from './routes/famillyRoutes.js';
 import cookieParser from 'cookie-parser';
 import userRoutes from './routes/userRoutes.js';
 import "dotenv/config"; // Import dotenv untuk mengakses variabel lingkungan
@@ -15,25 +15,14 @@ const app = express();
 
 app.set("view engine", "ejs");
 
-// Apply CORS middleware before others like cookieParser and express.json
+app.use(cookieParser());
 app.use(
   cors({
-     origin: [
-    "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com",
-    "https://fam-1057648600827.us-central1.run.app"
-  ], // Ganti dengan URL frontend yang terdeploy
-  credentials: true, // Memungkinkan penggunaan cookies
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 200,
-  preflightContinue: false
+    origin: ["http://127.0.0.1:5500"], // <- Support both localhost and 127.0.0.1
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
-
-// Handle preflight requests explicitly
-app.options('*', cors());
-
-app.use(cookieParser());
 app.use(express.json());
 
 app.use('/view', express.static(path.join(__dirname, 'view')));
@@ -44,14 +33,13 @@ app.get('/view', (req, res) => {
 });
 
 // Gunakan route user dengan prefix "/api"
-app.use('/api', familyRoutes);
+app.use('/api', famillyRoutes);
 app.use('/api', userRoutes);
 
 // Sinkronisasi model sebelum server berjalan
 initializeModels().then(() => {
-    const port = 3000;
-    app.listen(port, '0.0.0.0', () => {
-        console.log(`Server is running on port ${port}`);
+    app.listen(3000, () => {
+        console.log('Server is running on port 3000');
     });
 }).catch((error) => {
     console.error('Failed to initialize models:', error);
