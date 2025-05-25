@@ -15,7 +15,7 @@ const app = express();
 
 app.set("view engine", "ejs");
 
-app.use(cookieParser());
+// Apply CORS middleware before others like cookieParser and express.json
 app.use(
   cors({
      origin: [
@@ -24,8 +24,11 @@ app.use(
   ], // Ganti dengan URL frontend yang terdeploy
   credentials: true, // Memungkinkan penggunaan cookies
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]})
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204 // Explicitly set 204 for preflight success
+  })
 );
+app.use(cookieParser());
 app.use(express.json());
 
 app.use('/view', express.static(path.join(__dirname, 'view')));
