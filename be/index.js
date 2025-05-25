@@ -12,13 +12,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.set("view engine", "ejs");
 
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://127.0.0.1:5500"], // <- Support both localhost and 127.0.0.1
+    origin: ["https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com"], // <- Support both localhost and 127.0.0.1
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
   })
@@ -38,7 +39,7 @@ app.use('/api', userRoutes);
 
 // Sinkronisasi model sebelum server berjalan
 initializeModels().then(() => {
-    app.listen(3000, () => {
+    app.listen(port, () => {
         console.log('Server is running on port 3000');
     });
 }).catch((error) => {
