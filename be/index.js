@@ -20,6 +20,7 @@ app.use(
   cors({
      origin: [
     "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com",
+    "https://fam-1057648600827.us-central1.run.app", // Add your deployment URL
     "http://localhost:3000", // Tambahkan localhost untuk pengembangan lokal
   ], // Ganti dengan URL frontend yang terdeploy
   credentials: true, // Memungkinkan penggunaan cookies
@@ -44,8 +45,9 @@ app.use('/api', userRoutes);
 
 // Sinkronisasi model sebelum server berjalan
 initializeModels().then(() => {
-    app.listen(3000, () => {
-        console.log('Server is running on port 3000');
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
     });
 }).catch((error) => {
     console.error('Failed to initialize models:', error);
