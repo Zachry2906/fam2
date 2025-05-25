@@ -18,14 +18,13 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [
-      "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com",
-      "http://localhost:3000",
-      "http://127.0.0.1:3000"
-    ],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
-  })
+     origin: [
+    "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com",
+    "http://localhost:3000", // Tambahkan localhost untuk pengembangan lokal
+  ], // Ganti dengan URL frontend yang terdeploy
+  credentials: true, // Memungkinkan penggunaan cookies
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]})
 );
 app.use(express.json());
 
