@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import familyRoutes from './routes/familyRoutes.js';
+import familyRoutes from './routes/famillyRoutes.js';
 import cookieParser from 'cookie-parser';
 import userRoutes from './routes/userRoutes.js';
 import "dotenv/config"; // Import dotenv untuk mengakses variabel lingkungan
