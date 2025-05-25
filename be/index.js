@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 app.set("view engine", "ejs");
 
@@ -40,7 +40,7 @@ app.use('/api', userRoutes);
 // Sinkronisasi model sebelum server berjalan
 initializeModels().then(() => {
     app.listen(port, () => {
-        console.log('Server is running on port 3000');
+        console.log('Server is running on port 5000');
     });
 }).catch((error) => {
     console.error('Failed to initialize models:', error);
