@@ -19,15 +19,19 @@ app.set("view engine", "ejs");
 app.use(
   cors({
      origin: [
-    "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com",
-    "http://localhost:3000", // Tambahkan localhost untuk pengembangan lokal
+    "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com"
   ], // Ganti dengan URL frontend yang terdeploy
   credentials: true, // Memungkinkan penggunaan cookies
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 204 // Explicitly set 204 for preflight success
+  optionsSuccessStatus: 200,
+  preflightContinue: false
   })
 );
+
+// Handle preflight requests explicitly
+app.options('*', cors());
+
 app.use(cookieParser());
 app.use(express.json());
 
@@ -44,8 +48,9 @@ app.use('/api', userRoutes);
 
 // Sinkronisasi model sebelum server berjalan
 initializeModels().then(() => {
-    app.listen(3000, () => {
-        console.log('Server is running on port 3000');
+    const port = process.env.PORT || 3000;
+    app.listen(port, '0.0.0.0', () => {
+        console.log(`Server is running on port ${port}`);
     });
 }).catch((error) => {
     console.error('Failed to initialize models:', error);
