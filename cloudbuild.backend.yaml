@@ -1,12 +1,12 @@
 steps:
   # 1. Build Docker image untuk backend
   - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/notes-be077", "."]
-    dir: "be"
+    args: ["build", "--cache-from", "gcr.io/$PROJECT_ID/fam", "-t", "gcr.io/$PROJECT_ID/fam:${SHORT_SHA}", "."]
+    dir: "notes_be"
 
   # 2. Push ke Container Registry / Artifact Registry
   - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/notes-be077"]
+    args: ["push", "gcr.io/$PROJECT_ID/fam:${SHORT_SHA}"]
 
   # 3. Deploy ke Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
@@ -15,9 +15,9 @@ steps:
       [
         "run",
         "deploy",
-        "notes-be077",
+        "fam",
         "--image",
-        "gcr.io/$PROJECT_ID/notes-be077",
+        "gcr.io/$PROJECT_ID/fam:${SHORT_SHA}",
         "--timeout",
         "1000s",
         "--port",
@@ -25,9 +25,10 @@ steps:
         "--region",
         "us-central1",
         "--allow-unauthenticated",
+        "--set-env-vars",
+        "ACCESS_TOKEN_SECRET=${_ACCESS_TOKEN_SECRET},REFRESH_TOKEN_SECRET=${_REFRESH_TOKEN_SECRET},DB_HOST=${_DB_HOST},DB_NAME=${_DB_NAME},DB_PASSWORD=${_DB_PASSWORD},DB_USERNAME=${_DB_USERNAME}"
       ]
 
 # Log hanya akan disimpan di Google Cloud Logging
-# Log tidak akan disimpan di Google Cloud Storage (butuh hak akses).
 options:
   logging: CLOUD_LOGGING_ONLY
