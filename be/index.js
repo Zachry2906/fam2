@@ -18,7 +18,7 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com"], // <- Support both localhost and 127.0.0.1
+    origin: ["http://127.0.0.1:5500"], // <- Support both localhost and 127.0.0.1
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
   })
