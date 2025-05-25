@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import famillyRoutes from './routes/famillyRoutes.js';
+import familyRoutes from './routes/familyRoutes.js';
 import cookieParser from 'cookie-parser';
 import userRoutes from './routes/userRoutes.js';
 import "dotenv/config"; // Import dotenv untuk mengakses variabel lingkungan
@@ -18,7 +18,11 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com"], // <- Support both localhost and 127.0.0.1
+    origin: [
+      "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com",
+      "http://localhost:3000",
+      "http://127.0.0.1:3000"
+    ],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
   })
@@ -33,7 +37,7 @@ app.get('/view', (req, res) => {
 });
 
 // Gunakan route user dengan prefix "/api"
-app.use('/api', famillyRoutes);
+app.use('/api', familyRoutes);
 app.use('/api', userRoutes);
 
 // Sinkronisasi model sebelum server berjalan
