@@ -5,7 +5,7 @@
  */
 
 // URL dasar untuk backend API
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://fam-1057648600827.us-central1.run.app';
 
 // Variabel global untuk menyimpan informasi user dari token
 let token = "";    // Token JWT aktif

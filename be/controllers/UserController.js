@@ -273,7 +273,7 @@ async function login(req, res) {
           // - `true`: Cookie tidak bisa diakses via JavaScript (document.cookie)
           // - Mencegah serangan XSS (Cross-Site Scripting)
           // - Untuk development bisa `false` agar bisa diakses via console
-          httpOnly: false, // <- Untuk keperluan PRODUCTION wajib true
+          httpOnly: true, // <- Untuk keperluan PRODUCTION wajib true
 
           // sameSite:
           // - "strict": Cookie, hanya dikirim untuk request SAME SITE (domain yang sama)
