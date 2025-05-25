@@ -1,0 +1,7 @@
+be/node_modules
+package-lock.json
+view/assets
+server.js
+assets
+be/.env
+be/account-key.json

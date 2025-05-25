@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Tree</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            font-family: Helvetica;
+        }
+
+        #tree {
+            width: 100%;
+            height: calc(100% - 60px); /* Adjust height to account for navbar */
+        }
+
+        .navbar {
+            background-color: #333;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .navbar-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-title">Family Tree</div>
+        <button class="logout-btn" id="logout">Logout</button>
+    </div>
+    <div id="tree"></div>
+</body>
+</html>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="familytree.js"></script>
+    <script src="script.js"></script>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <section class="hero has-background-grey-light is-fullheight is-fullwidth">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-4-desktop">
+            <form id="registerForm" class="box">
+              <p id="msg" class="has-text-centered has-text-danger"></p>
+
+              <div class="field mt-5">
+                <label class="label">Name</label>
+                <div class="controls">
+                  <input type="text" id="name" class="input" placeholder="Name" />
+                </div>
+              </div>
+
+              <div class="field mt-5">
+                <label class="label">Password</label>
+                <div class="controls">
+                  <input type="password" id="password" class="input" placeholder="******" />
+                </div>
+              </div>
+
+              <div class="field mt-5">
+                <label class="label">Confirm Password</label>
+                <div class="controls">
+                  <input type="password" id="confPassword" class="input" placeholder="******" />
+                </div>
+              </div>
+
+              <div class="field mt-5">
+                <button type="submit" class="button is-success is-fullwidth">Register</button>
+              </div>
+
+              <a href="/">Login</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const BASE_URL = "http://localhost:3000"; // Ganti dengan URL backend kamu
+
+    $("#registerForm").submit(function (e) {
+      e.preventDefault();
+
+      const name = $("#name").val();
+      const password = $("#password").val();
+      const confPassword = $("#confPassword").val();
+
+      if (password !== confPassword) {
+        $("#msg").text("Password dan konfirmasi password tidak cocok");
+        return;
+      }
+
+      $.ajax({
+        url: `${BASE_URL}/api/users`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+          name,
+          password,
+        }),
+        success: function () {
+          window.location.href = "index.html"; // Redirect ke login
+        },
+        error: function (xhr) {
+          if (xhr.responseJSON && xhr.responseJSON.msg) {
+            $("#msg").text(xhr.responseJSON.msg);
+          } else {
+            $("#msg").text("Registrasi gagal. Silakan coba lagi.");
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
