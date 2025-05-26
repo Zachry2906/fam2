@@ -283,37 +283,52 @@ chart.editUI.on('element-btn-click', function(sender, args) {
             contentType: false,
             success: function(response) {
                 console.log('Photo uploaded:', response);
-
-                // upadte input foto di form edit
+                console.log('publicUrl from response:', response.publicUrl);
+                
                 var photoInput = document.querySelector('[data-binding="photo"]');
                 if (photoInput) {
-                    // Use the complete public URL instead of just the filename
                     photoInput.value = response.publicUrl;
-
-                    // Trigger change event to ensure the familytree library detects the change
+                    
+                    // Debug: cek value setelah di-set
+                    console.log('photoInput.value after set:', photoInput.value);
+                    
+                    // Trigger change event
                     var changeEvent = new Event('change');
                     photoInput.dispatchEvent(changeEvent);
-
-                    // perbarui preview foto jika ada
+                    
+                    // Debug: cek value setelah change event
+                    setTimeout(() => {
+                        console.log('photoInput.value after change event:', photoInput.value);
+                    }, 100);
+                    
+                    // Preview image
                     var photoPreview = photoInput.parentNode.querySelector('img') ||
                         photoInput.parentNode.querySelector('.photo-preview img');
                     if (photoPreview) {
                         photoPreview.src = response.publicUrl;
+                        console.log('photoPreview.src after set:', photoPreview.src);
+                        
+                        // Debug: cek src setelah browser memproses
+                        setTimeout(() => {
+                            console.log('photoPreview.src after timeout:', photoPreview.src);
+                        }, 100);
                     } else {
-                        // Create preview if it doesn't exist
                         var preview = document.createElement('div');
                         preview.className = 'photo-preview';
                         preview.style.marginTop = '10px';
-
                         var img = document.createElement('img');
                         img.src = response.publicUrl;
-                        console.log('Preview URL:', response.publicUrl);
+                        console.log('New img.src after set:', img.src);
+                        
                         img.style.maxWidth = '100px';
                         img.style.maxHeight = '100px';
-
                         preview.appendChild(img);
-                        console.log("img : ", img)
                         photoInput.parentNode.appendChild(preview);
+                        
+                        // Debug: cek src setelah ditambahkan ke DOM
+                        setTimeout(() => {
+                            console.log('New img.src after DOM append:', img.src);
+                        }, 100);
                     }
                 }
             },
