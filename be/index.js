@@ -12,8 +12,7 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 
 app.use(cors({
- origin: "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com", 
- origin: "http://127.0.0.1:5500",
+ origin: "https://fe-077-dot-b-07-452412.uc.r.appspot.com",
  credentials: true
 })); 
 
