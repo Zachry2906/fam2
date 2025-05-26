@@ -19,7 +19,7 @@ app.set("view engine", "ejs");
 app.use(
   cors({
     origin: [
-      "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com",
+      "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com/",
       "https://fam-1057648600827.us-central1.run.app"
     ],
     credentials: true,
