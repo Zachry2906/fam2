@@ -63,6 +63,9 @@
       $.ajax({
         url: `${BASE_URL}/api/login`,
         method: "POST",
+        xhrFields: {
+          withCredentials: true // Ini penting untuk mengirim cookies
+        },
         contentType: "application/json",
         data: JSON.stringify({ name, password }),
         success: function () {

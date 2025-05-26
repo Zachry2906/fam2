@@ -269,12 +269,10 @@ async function login(req, res) {
 
         // Masukkin refresh token ke cookie
         res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
+          httpOnly: false,
           sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000,
           secure: true,
-          domain: undefined, // Let browser handle domain automatically
-          path: "/"
         });
 
         // Kirim respons berhasil (200)
