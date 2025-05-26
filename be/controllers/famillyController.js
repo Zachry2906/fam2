@@ -5,6 +5,7 @@ import path from 'path';
 import multer from 'multer';
 import { Storage } from '@google-cloud/storage';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url'; // Untuk ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const keyFilename = path.join(__dirname, 'account-key.json');
