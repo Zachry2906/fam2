@@ -4,6 +4,7 @@ import Sequelize from "sequelize";
 import path from 'path';
 import multer from 'multer';
 import { Storage } from '@google-cloud/storage';
+import dotenv from 'dotenv';
 
 
 dotenv.config();
