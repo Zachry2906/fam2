@@ -5,83 +5,149 @@ import path from 'path';
 import multer from 'multer';
 import { Storage } from '@google-cloud/storage';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url'; // Untuk ES Modules
+import multer from 'multer';
+import path from 'path'; // PENTING: Tambahkan import ini
+import { fileURLToPath } from 'url';
+
+// Untuk ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const keyFilename = path.join(__dirname, 'account-key.json');
 
 dotenv.config();
 
-const projectId = 'b-07-452412';;
+const projectId = 'b-07-452412';
 const bucketName = 'tcc-07-77';
 
-// Initialize Cloud Storage with credentials
-const storage = new Storage({
-keyFilename,
-  projectId
-});
+// Konfigurasi Google Cloud Storage
+let storage;
+const keyFilename = path.join(__dirname, 'account-key.json');
+
+try {
+    // Cek apakah file key ada (untuk local development)
+    storage = new Storage({
+        keyFilename,
+        projectId
+    });
+} catch (error) {
+    console.log('Using default credentials (Cloud Run/Cloud Build environment)');
+    // Untuk Cloud Run, gunakan default credentials
+    storage = new Storage({
+        projectId
+    });
+}
 
 const bucket = storage.bucket(bucketName);
 
+// Konfigurasi Multer
 const multerStorage = multer.memoryStorage();
 const upload = multer({
     storage: multerStorage,
     limits: { fileSize: 5 * 1024 * 1024 }, // Limit 5MB
     fileFilter: function(req, file, cb) {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-            return cb(new Error('Only image files are allowed!'), false);
+        // Validasi lebih ketat untuk file type
+        const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        if (!allowedMimes.includes(file.mimetype)) {
+            return cb(new Error('Only image files (JPEG, PNG, GIF) are allowed!'), false);
         }
         cb(null, true);
     }
 }).single('photo');
 
 export const uploadPhoto = (req, res) => {
+    console.log('Upload photo request received');
+    
     upload(req, res, async function(err) {
         if (err) {
-            console.error('Error uploading file:', err);
-            return res.status(400).json({ error: err.message });
+            console.error('Multer error:', err);
+            return res.status(400).json({ 
+                error: err.message,
+                details: 'File upload validation failed'
+            });
         }
 
         if (!req.file) {
+            console.error('No file in request');
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
+        console.log('File received:', {
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: req.file.size
+        });
+
         try {
-            // Create a unique filename
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-            const ext = path.extname(req.file.originalname);
-            const filename = 'photo-' + uniqueSuffix + ext;
+            // Create unique filename
+            const timestamp = Date.now();
+            const randomSuffix = Math.round(Math.random() * 1E9);
+            const ext = path.extname(req.file.originalname).toLowerCase();
+            const filename = `photos/photo-${timestamp}-${randomSuffix}${ext}`;
+
+            console.log('Uploading to GCS with filename:', filename);
 
             // Upload to Google Cloud Storage
             const blob = bucket.file(filename);
             const blobStream = blob.createWriteStream({
                 resumable: false,
                 metadata: {
-                    contentType: req.file.mimetype
+                    contentType: req.file.mimetype,
+                    // Tambahkan metadata untuk public access
+                    cacheControl: 'public, max-age=31536000'
                 }
             });
 
             blobStream.on('error', (error) => {
-                console.error('Error uploading to GCS:', error);
-                return res.status(500).json({ error: 'Failed to upload file to storage' });
-            });
-
-            blobStream.on('finish', async () => {
-                // Generate public URL - no need to call makePublic() with uniform bucket-level access
-                // Remove the makePublic() call that's causing the error
-                const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
-                
-                res.json({
-                    message: 'File uploaded successfully',
-                    photoUrl: filename,
-                    publicUrl: publicUrl
+                console.error('GCS upload error:', error);
+                return res.status(500).json({ 
+                    error: 'Failed to upload file to storage',
+                    details: error.message 
                 });
             });
 
+            blobStream.on('finish', async () => {
+                try {
+                    console.log('File uploaded successfully to GCS');
+                    
+                    // Make file publicly accessible
+                    await blob.makePublic();
+                    
+                    // Generate public URL
+                    const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
+                    
+                    console.log('Public URL generated:', publicUrl);
+                    
+                    res.json({
+                        success: true,
+                        message: 'File uploaded successfully',
+                        filename: filename,
+                        publicUrl: publicUrl,
+                        originalName: req.file.originalname,
+                        size: req.file.size
+                    });
+                } catch (publicError) {
+                    console.error('Error making file public:', publicError);
+                    
+                    // File uploaded but failed to make public
+                    const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
+                    res.json({
+                        success: true,
+                        message: 'File uploaded successfully (may need manual public access setup)',
+                        filename: filename,
+                        publicUrl: publicUrl,
+                        warning: 'File may not be publicly accessible'
+                    });
+                }
+            });
+
+            // Start upload
             blobStream.end(req.file.buffer);
+            
         } catch (error) {
-            console.error('Error in GCS upload:', error);
-            return res.status(500).json({ error: error.message });
+            console.error('General error in upload process:', error);
+            return res.status(500).json({ 
+                error: 'Internal server error during upload',
+                details: error.message 
+            });
         }
     });
 };
