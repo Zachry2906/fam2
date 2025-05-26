@@ -1,6 +1,4 @@
 import express from "express";
-import { fileURLToPath } from 'url';
-import path from 'path';
 import { 
     getFamily,
     createFamily,
@@ -12,9 +10,6 @@ import {
     uploadPhoto   
 } from "../controllers/famillyController.js";
 import { verifyToken } from "../middleware/VerifyToken.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
@@ -28,10 +23,5 @@ router.get("/relationships", verifyToken, getRelationships);
 router.post("/relationship", verifyToken, createRelationship);
 
 router.post("/upload-photo", verifyToken, uploadPhoto);
-
-// Route view
-router.get('/view', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'view', 'index.html'));
-});
 
 export default router;
