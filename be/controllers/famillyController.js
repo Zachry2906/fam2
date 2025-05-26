@@ -9,9 +9,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const projectId = process.env.PROJECT_ID;
+const projectId = 'b-07-452412';
 const keyFilename = 'https://storage.googleapis.com/tcc-07-77/account-key.json';
-const bucketName = process.env.BUCKET_NAME;
+const bucketName = 'tcc-07-77';
 
 // Initialize Cloud Storage with credentials
 const storage = new Storage({
