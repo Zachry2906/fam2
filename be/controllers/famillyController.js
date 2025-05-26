@@ -5,16 +5,19 @@ import path from 'path';
 import multer from 'multer';
 import { Storage } from '@google-cloud/storage';
 
-// Path to your service account key file
-// const keyFilePath = path.resolve('./account-key.json');
+
+dotenv.config();
+
+const projectId = process.env.PROJECT_ID;
+const keyFilename = process.env.KEY_FILE_NAME;
+const bucketName = process.env.BUCKET_NAME;
 
 // Initialize Cloud Storage with credentials
 const storage = new Storage({
-//   keyFilename: keyFilePath,
-  projectId: 'noted-cider-459904-e7' // Replace with your actual Google Cloud project ID
+keyFilename,
+  projectId
 });
 
-const bucketName = 'tugas-7'; // Create this bucket in Google Cloud Storage
 const bucket = storage.bucket(bucketName);
 
 const multerStorage = multer.memoryStorage();
