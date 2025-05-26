@@ -280,6 +280,9 @@ chart.editUI.on('element-btn-click', function(sender, args) {
             type: 'POST',
             data: formData,
             processData: false,
+              xhrFields: {
+                withCredentials: true
+            },
             contentType: false,
             success: function(response) {
                 console.log('Photo uploaded:', response);
