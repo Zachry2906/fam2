@@ -401,6 +401,9 @@ chart.onUpdateNode(function (args) {
                     url: `${BASE_URL}/api/family/${person.id}`,
                     type: 'PUT',
                     contentType: 'application/json',
+                    xhrFields: {
+                    withCredentials: true // Ini penting untuk mengirim cookies
+                    },
                     data: JSON.stringify(person),
                     success: function(updatedPerson) {
                         console.log('Anggota keluarga berhasil diperbarui:', updatedPerson);
