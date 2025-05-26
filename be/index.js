@@ -12,18 +12,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 5000;
 
 app.set("view engine", "ejs");
 
-app.use(cookieParser());
+// Apply CORS middleware first
 app.use(
   cors({
-    origin: ["https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com"], // <- Support both localhost and 127.0.0.1
+    origin: [
+      "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com"
+    ],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 200,
+    preflightContinue: false
   })
 );
+
+// Handle preflight requests explicitly
+app.options('*', cors());
+
+app.use(cookieParser());
 app.use(express.json());
 
 app.use('/view', express.static(path.join(__dirname, 'view')));
@@ -39,8 +48,9 @@ app.use('/api', userRoutes);
 
 // Sinkronisasi model sebelum server berjalan
 initializeModels().then(() => {
-    app.listen(port, () => {
-        console.log('Server is running on port 5000');
+    const port = process.env.PORT || 5000;
+    app.listen(port, '0.0.0.0', () => {
+        console.log(`Server is running on port ${port}`);
     });
 }).catch((error) => {
     console.error('Failed to initialize models:', error);
