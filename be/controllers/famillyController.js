@@ -5,12 +5,14 @@ import path from 'path';
 import multer from 'multer';
 import { Storage } from '@google-cloud/storage';
 import dotenv from 'dotenv';
-
+import path from 'path'; // Jangan lupa import path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const keyFilename = path.join(__dirname, 'account-key.json');
 
 dotenv.config();
 
-const projectId = 'b-07-452412';
-const keyFilename = 'https://storage.googleapis.com/tcc-07-77/account-key.json';
+const projectId = 'b-07-452412';;
 const bucketName = 'tcc-07-77';
 
 // Initialize Cloud Storage with credentials
