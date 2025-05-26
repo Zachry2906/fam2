@@ -18,7 +18,7 @@ const bucketName = 'tcc-07-77';
 
 // Konfigurasi Google Cloud Storage
 let storage;
-const keyFilename = path.join(__dirname, 'account-key.json');
+const keyFilename = path.join(__dirname, '../account-key.json');
 
 try {
     // Cek apakah file key ada (untuk local development)
