@@ -8,8 +8,6 @@
 const BASE_URL = 'https://fam07-283162572185.us-central1.run.app';
 
 // Configure axios defaults for all requests
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = BASE_URL;
 
 // Variabel global untuk menyimpan informasi user dari token
 let token = "";    // Token JWT aktif

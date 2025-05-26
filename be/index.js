@@ -12,8 +12,8 @@ const app = express();
 // This is important for 'secure: true' cookies to work correctly
 app.set('trust proxy', 1); 
 app.set("view engine", "ejs");
-app.use(cookieParser());
 
+// Apply CORS middleware before cookieParser and other route/request handling middleware
 app.use(cors({
  origin: ["https://fe-077-dot-b-07-452412.uc.r.appspot.com", "http://127.0.0.1:5500"],
  credentials: true,
@@ -22,6 +22,7 @@ app.use(cors({
  optionsSuccessStatus: 200
 })); 
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.use('/api', familyRoutes);
