@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import famillyRoutes from './routes/famillyRoutes.js';
+import familyRoutes from './routes/famillyRoutes.js';
 import cookieParser from 'cookie-parser';
 import userRoutes from './routes/userRoutes.js';
 import "dotenv/config"; // Import dotenv untuk mengakses variabel lingkungan
@@ -13,26 +13,21 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.set("view engine", "ejs");
-
-// Apply CORS middleware first
-app.use(
-  cors({
-    origin: [
-      "https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com/"
-    ],
+const corsOptions = 
+{
+    origin: ["https://fe-077-dot-noted-cider-459904-e7.ue.r.appspot.com/"], // <- Support both localhost and 127.0.0.1
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    optionsSuccessStatus: 200,
-    preflightContinue: false
-  })
-);
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 200
+  }
 
-// Handle preflight requests explicitly
-app.options('*', cors());
+app.set("view engine", "ejs");
 
 app.use(cookieParser());
+app.use(
+  cors(corsOptions)
+);
 app.use(express.json());
 
 app.use('/view', express.static(path.join(__dirname, 'view')));
@@ -43,7 +38,7 @@ app.get('/view', (req, res) => {
 });
 
 // Gunakan route user dengan prefix "/api"
-app.use('/api', famillyRoutes);
+app.use('/api', familyRoutes);
 app.use('/api', userRoutes);
 
 // Sinkronisasi model sebelum server berjalan
