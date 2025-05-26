@@ -17,11 +17,14 @@ app.use(cors({
  credentials: true
 })); 
 
-
 app.use(express.json());
 
 app.use('/api', familyRoutes);
 app.use('/api', userRoutes);
+
+app.get('/', (req, res) => {
+    res.render('index', { title: 'Family App' });
+});
 
 initializeModels().then(() => {
     const port = process.env.PORT || 3000;
