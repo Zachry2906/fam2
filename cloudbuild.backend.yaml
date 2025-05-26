@@ -3,6 +3,10 @@ steps:
   - name: "gcr.io/cloud-builders/gsutil"
     args: ["cp", "${_ENV}", "be/.env"]
 
+  # BARU: Ngambil data account-key.json yg disimpen di cloud storage pake gsuri
+  - name: "gcr.io/cloud-builders/gsutil"
+    args: ["cp", "${_ACCOUNT_KEY_PATH_GCS}", "be/account-key.json"] # Asumsi disimpan di direktori 'be'
+
   # 1. Build Docker image untuk backend
   - name: "gcr.io/cloud-builders/docker"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/fam07", "."]
