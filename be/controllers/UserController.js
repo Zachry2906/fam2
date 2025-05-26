@@ -269,35 +269,19 @@ async function login(req, res) {
 
         // Masukkin refresh token ke cookie
         res.cookie("refreshToken", refreshToken, {
-          // httpOnly:
-          // - `true`: Cookie tidak bisa diakses via JavaScript (document.cookie)
-          // - Mencegah serangan XSS (Cross-Site Scripting)
-          // - Untuk development bisa `false` agar bisa diakses via console
-          httpOnly: true, // <- Untuk keperluan PRODUCTION wajib true
-
-          // sameSite:
-          // - "strict": Cookie, hanya dikirim untuk request SAME SITE (domain yang sama)
-          // - "lax": Cookie dikirim untuk navigasi GET antar domain (default)
-          // - "none": Cookie dikirim untuk CROSS-SITE requests (butuh secure:true)
-          sameSite: "none", // <- Untuk API yang diakses dari domain berbeda
-
-          // maxAge:
-          // - Masa aktif cookie dalam milidetik (1 hari = 24x60x60x1000)
-          // - Setelah waktu ini, cookie akan otomatis dihapus browser
+          httpOnly: true,
+          sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000,
-
-          // secure:
-          // - `true`: Cookie hanya dikirim via HTTPS
-          // - Mencegah MITM (Man-in-the-Middle) attack
-          // - WAJIB `true` jika sameSite: "none"
           secure: true,
+          domain: undefined, // Let browser handle domain automatically
+          path: "/"
         });
 
         // Kirim respons berhasil (200)
         return res.status(200).json({
           status: "Success",
           message: "Login Berhasil",
-          data: safeUserData, // <- Data user tanpa informasi sensitif
+          data: safeUserData,
           accessToken,
         });
       } else {

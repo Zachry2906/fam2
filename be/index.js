@@ -13,7 +13,10 @@ app.use(cookieParser());
 
 app.use(cors({
  origin: "https://fe-077-dot-b-07-452412.uc.r.appspot.com",
- credentials: true
+ credentials: true,
+ methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+ allowedHeaders: ["Content-Type", "Authorization"],
+ optionsSuccessStatus: 200
 })); 
 
 app.use(express.json());
