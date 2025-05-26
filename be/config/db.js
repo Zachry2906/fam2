@@ -1,15 +1,17 @@
 import { Sequelize } from "sequelize";
-import "dotenv/config";
+import dotenv from "dotenv";
 
-//Bikin variabel yg nerima data yg dirahasiakan
-const DB_NAME = process.env.DB_NAME;
-const DB_USERNAME = process.env.DB_USERNAME;
-const DB_PASSWORD = process.env.DB_PASSWORD;
-const DB_HOST = process.env.DB_HOST;
+dotenv.config();
 
-// Nyambungin db ke BE
-const db = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
-  host: DB_HOST,
+const {
+  DB_HOST: host,
+  DB_USERNAME: username,
+  DB_PASSWORD: password,
+  DB_NAME: database,
+} = process.env;
+
+const db = new Sequelize(database, username, password, {
+  host,
   dialect: "mysql",
 });
 
