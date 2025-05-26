@@ -5,6 +5,7 @@
   <title>Register</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
   <section class="hero has-background-grey-light is-fullheight is-fullwidth">
@@ -52,7 +53,10 @@
     // const BASE_URL = "http://localhost:3000";
     const BASE_URL = "https://fam-1057648600827.us-central1.run.app";
 
-    $("#registerForm").submit(function (e) {
+    // Configure axios defaults
+    axios.defaults.withCredentials = true;
+
+    $("#registerForm").submit(async function (e) {
       e.preventDefault();
 
       const name = $("#name").val();
@@ -64,28 +68,20 @@
         return;
       }
 
-      $.ajax({
-        url: `${BASE_URL}/api/users`,
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
+      try {
+        await axios.post(`${BASE_URL}/api/users`, {
           name,
           password,
-        }),
-        xhrFields: {
-          withCredentials: true // Ini penting untuk mengirim cookies
-        },
-        success: function () {
-          window.location.href = "index.html"; // Redirect ke login
-        },
-        error: function (xhr) {
-          if (xhr.responseJSON && xhr.responseJSON.msg) {
-            $("#msg").text(xhr.responseJSON.msg);
-          } else {
-            $("#msg").text("Registrasi gagal. Silakan coba lagi.");
-          }
+        });
+        
+        window.location.href = "index.html"; // Redirect ke login
+      } catch (error) {
+        if (error.response && error.response.data && error.response.data.msg) {
+          $("#msg").text(error.response.data.msg);
+        } else {
+          $("#msg").text("Registrasi gagal. Silakan coba lagi.");
         }
-      });
+      }
     });
   </script>
 </body>
