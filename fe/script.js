@@ -312,6 +312,7 @@ chart.editUI.on('element-btn-click', function(sender, args) {
                         img.style.maxHeight = '100px';
 
                         preview.appendChild(img);
+                        console.log("img : ", img)
                         photoInput.parentNode.appendChild(preview);
                     }
                 }

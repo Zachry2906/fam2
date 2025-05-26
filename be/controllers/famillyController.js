@@ -487,8 +487,8 @@ export const updateFamily = async (req, res) => {
 
         // In updateFamily function, update the photo handling:
         // Process photo
-        const updatedPhoto = photo && !photo.includes("storage.googleapis.com/tugas-7/")
-            ? `storage.googleapis.com/tugas-7/${photo}`  // Tambahkan base URL jika belum ada
+        const updatedPhoto = photo && !photo.includes("storage.googleapis.com/tcc-07-77/")
+            ? `storage.googleapis.com/tcc-07-77/${photo}`  // Tambahkan base URL jika belum ada
             : photo;  // Gunakan URL lengkap jika sudah ada
 
         // Delete old photo if changed
