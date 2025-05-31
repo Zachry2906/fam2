@@ -508,7 +508,7 @@ export const updateFamily = async (req, res) => {
             name,
             gender,
             email,
-            born,
+            born : born !== undefined ? born : person.born,
             photo: updatedPhoto,
             fid: validFid,
             mid: validMid,
@@ -668,14 +668,14 @@ export const checkStorageConfig = async (req, res) => {
     // Check if bucket exists
     const [exists] = await bucket.exists();
     if (!exists) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: "Bucket does not exist. Please create the 'tugas-7' bucket in your GCP project."
       });
     }
-    
+
     // Get bucket metadata
     const [metadata] = await bucket.getMetadata();
-    
+
     res.json({
       message: "Storage configuration is valid",
       bucketName: bucketName,
@@ -688,9 +688,11 @@ export const checkStorageConfig = async (req, res) => {
     });
   } catch (error) {
     console.error('Storage configuration error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to verify storage configuration. Check your service account key and permissions.",
       details: error.message
     });
   }
 };
+
+
