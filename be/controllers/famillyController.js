@@ -508,11 +508,11 @@ export const updateFamily = async (req, res) => {
             name,
             gender,
             email,
-            born : born !== undefined ? born : person.born,
+            born: (born === undefined || born === '' || born === null) ? person.born : born,
             photo: updatedPhoto,
             fid: validFid,
             mid: validMid,
-            userId : userId
+            userId: userId
         }, { transaction });
 
         // Handle spouse relationships if provided
@@ -694,5 +694,4 @@ export const checkStorageConfig = async (req, res) => {
     });
   }
 };
-
 
