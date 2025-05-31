@@ -270,76 +270,157 @@ chart.editUI.on('element-btn-click', function(sender, args) {
         var file = e.target.files[0];
         if (!file) return;
 
+        // Validate file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File terlalu besar. Maksimum ukuran file adalah 5MB.');
+            document.body.removeChild(fileInput);
+            return;
+        }
+
+        // Validate file type
+        if (!['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(file.type)) {
+            alert('Format file tidak didukung. Gunakan format JPEG, PNG, atau GIF.');
+            document.body.removeChild(fileInput);
+            return;
+        }
+
         // membuat FormData untuk mengirim file
         var formData = new FormData();
         formData.append('photo', file);
 
-        // uplaod foto ke server
-        $.ajax({
-            url: `${BASE_URL}/api/upload-photo`,
-            type: 'POST',
-            data: formData,
-            processData: false,
-              xhrFields: {
-                withCredentials: true
-            },
-            contentType: false,
-            success: function(response) {
-                console.log('Photo uploaded:', response);
-                console.log('publicUrl from response:', response.publicUrl);
-                
-                var photoInput = document.querySelector('[data-binding="photo"]');
-                if (photoInput) {
-                    photoInput.value = response.publicUrl;
-                    
-                    // Debug: cek value setelah di-set
-                    console.log('photoInput.value after set:', photoInput.value);
-                    
-                    // Trigger change event
-                    var changeEvent = new Event('change');
-                    photoInput.dispatchEvent(changeEvent);
-                    
-                    // Debug: cek value setelah change event
-                    setTimeout(() => {
-                        console.log('photoInput.value after change event:', photoInput.value);
-                    }, 100);
-                    
-                    // Preview image
-                    var photoPreview = photoInput.parentNode.querySelector('img') ||
-                        photoInput.parentNode.querySelector('.photo-preview img');
-                    if (photoPreview) {
-                        photoPreview.src = response.publicUrl;
-                        console.log('photoPreview.src after set:', photoPreview.src);
-                        
-                        // Debug: cek src setelah browser memproses
+        // Tampilkan loading indicator
+        var loadingIndicator = document.createElement('div');
+        loadingIndicator.innerText = 'Mengupload foto...';
+        loadingIndicator.style.padding = '10px';
+        loadingIndicator.style.background = '#f5f5f5';
+        loadingIndicator.style.position = 'fixed';
+        loadingIndicator.style.top = '10px';
+        loadingIndicator.style.right = '10px';
+        loadingIndicator.style.zIndex = '9999';
+        loadingIndicator.id = 'upload-indicator';
+        document.body.appendChild(loadingIndicator);
+
+        // Refresh token first to ensure we have a valid token
+        checkAndRefreshToken().then(validToken => {
+            // uplaod foto ke server
+            $.ajax({
+                url: `${BASE_URL}/api/upload-photo`,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'Authorization': `Bearer ${validToken}`  // Explicitly set token
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                timeout: 30000, // 30 seconds timeout
+                success: function(response) {
+                    // Remove loading indicator
+                    document.body.removeChild(document.getElementById('upload-indicator'));
+
+                    console.log('Photo uploaded:', response);
+                    console.log('publicUrl from response:', response.publicUrl);
+
+                    var photoInput = document.querySelector('[data-binding="photo"]');
+                    if (photoInput) {
+                        photoInput.value = response.publicUrl;
+
+                        // Debug: cek value setelah di-set
+                        console.log('photoInput.value after set:', photoInput.value);
+
+                        // Trigger change event
+                        var changeEvent = new Event('change');
+                        photoInput.dispatchEvent(changeEvent);
+
+                        // Debug: cek value setelah change event
                         setTimeout(() => {
-                            console.log('photoPreview.src after timeout:', photoPreview.src);
+                            console.log('photoInput.value after change event:', photoInput.value);
                         }, 100);
-                    } else {
-                        var preview = document.createElement('div');
-                        preview.className = 'photo-preview';
-                        preview.style.marginTop = '10px';
-                        var img = document.createElement('img');
-                        img.src = response.publicUrl;
-                        console.log('New img.src after set:', img.src);
-                        
-                        img.style.maxWidth = '100px';
-                        img.style.maxHeight = '100px';
-                        preview.appendChild(img);
-                        photoInput.parentNode.appendChild(preview);
-                        
-                        // Debug: cek src setelah ditambahkan ke DOM
-                        setTimeout(() => {
-                            console.log('New img.src after DOM append:', img.src);
-                        }, 100);
+
+                        // Preview image
+                        var photoPreview = photoInput.parentNode.querySelector('img') ||
+                            photoInput.parentNode.querySelector('.photo-preview img');
+                        if (photoPreview) {
+                            photoPreview.src = response.publicUrl;
+                            console.log('photoPreview.src after set:', photoPreview.src);
+
+                            // Debug: cek src setelah browser memproses
+                            setTimeout(() => {
+                                console.log('photoPreview.src after timeout:', photoPreview.src);
+                            }, 100);
+                        } else {
+                            var preview = document.createElement('div');
+                            preview.className = 'photo-preview';
+                            preview.style.marginTop = '10px';
+                            var img = document.createElement('img');
+                            img.src = response.publicUrl;
+                            console.log('New img.src after set:', img.src);
+
+                            img.style.maxWidth = '100px';
+                            img.style.maxHeight = '100px';
+                            preview.appendChild(img);
+                            photoInput.parentNode.appendChild(preview);
+
+                            // Debug: cek src setelah ditambahkan ke DOM
+                            setTimeout(() => {
+                                console.log('New img.src after DOM append:', img.src);
+                            }, 100);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Remove loading indicator
+                    if (document.getElementById('upload-indicator')) {
+                        document.body.removeChild(document.getElementById('upload-indicator'));
+                    }
+
+                    console.error('Error uploading photo:', error);
+                    console.error('Status:', status);
+                    console.error('Response:', xhr.responseText);
+
+                    let errorMessage = 'Gagal mengupload foto. ';
+
+                    // Try to extract detailed error message
+                    try {
+                        const errorResponse = JSON.parse(xhr.responseText);
+                        if (errorResponse && errorResponse.error) {
+                            errorMessage += errorResponse.error;
+                        } else if (errorResponse && errorResponse.message) {
+                            errorMessage += errorResponse.message;
+                        }
+                    } catch (e) {
+                        // If parsing fails, show generic message with status
+                        errorMessage += `Status: ${xhr.status} - ${error}`;
+                    }
+
+                    // If status is 401, token might be invalid
+                    if (xhr.status === 401) {
+                        errorMessage += ' Token mungkin tidak valid. Coba refresh halaman.';
+                    }
+
+                    alert(errorMessage);
+
+                    // If it's a network error or timeout, offer to retry
+                    if (status === 'timeout' || status === 'error' && xhr.status === 0) {
+                        if (confirm('Koneksi lambat atau terputus. Coba upload lagi?')) {
+                            // Create new upload process
+                            var retryEvent = new Event('click');
+                            sender.dispatchEvent(retryEvent);
+                        }
                     }
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error uploading photo:', error);
-                alert('Failed to upload photo. Please try again.');
+            });
+        }).catch(error => {
+            // Remove loading indicator
+            if (document.getElementById('upload-indicator')) {
+                document.body.removeChild(document.getElementById('upload-indicator'));
             }
+            console.error('Failed to refresh token before upload:', error);
+            alert('Gagal memperbarui token autentikasi. Coba refresh halaman dan ulangi lagi.');
         });
+
         // buang input file setelah selesai
         document.body.removeChild(fileInput);
     };
@@ -537,3 +618,4 @@ function getOptions() {
     }
     return {enableSearch, scaleInitial};
 }
+
