@@ -228,6 +228,16 @@ var chart = new FamilyTree(document.getElementById('tree'), {
 
     $("#logout").click(function (e) {
       e.preventDefault();
+
+      // Clear all local storage data immediately
+      localStorage.removeItem('token');
+
+      // Reset all global user variables
+      token = "";
+      expire = "";
+      name = "";
+      id = "";
+
       $.ajax({
         url: `${BASE_URL}/api/logout`,
         method: "DELETE",
@@ -288,7 +298,6 @@ chart.editUI.on('element-btn-click', function(sender, args) {
         var formData = new FormData();
         formData.append('photo', file);
 
-        // Tampilkan loading indicator
         var loadingIndicator = document.createElement('div');
         loadingIndicator.innerText = 'Mengupload foto...';
         loadingIndicator.style.padding = '10px';
@@ -319,7 +328,6 @@ chart.editUI.on('element-btn-click', function(sender, args) {
                 success: function(response) {
                     // Remove loading indicator
                     document.body.removeChild(document.getElementById('upload-indicator'));
-
                     console.log('Photo uploaded:', response);
                     console.log('publicUrl from response:', response.publicUrl);
 
@@ -618,4 +626,5 @@ function getOptions() {
     }
     return {enableSearch, scaleInitial};
 }
+
 
